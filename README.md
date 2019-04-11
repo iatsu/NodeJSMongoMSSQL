@@ -1,5 +1,9 @@
 # NodeJSMongoMSSQL
-An example Node.JS API, fetching data from MSSQL and MongoDB
+An example Node.JS API, fetching data from MSSQL and MongoDB.
+
+Authentication and authorization with Bearer JWT.
+
+Swagger URL: `/api-docs`
 
 The project was created using [expressjs generator](https://expressjs.com/en/starter/generator.html).
 
