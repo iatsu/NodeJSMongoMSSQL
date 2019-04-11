@@ -13,6 +13,16 @@ const swaggerJsdoc = require('swagger-jsdoc');
 
 const options = {
   swaggerDefinition: {
+    securityDefinitions: {
+      Bearer: {
+        type: 'apiKey',
+        name: 'Authorization',
+        in: 'header'
+      }
+    },
+    security: [
+      { Bearer: [] }
+    ],
     // Like the one described here: https://swagger.io/specification/#infoObject
     info: {
       title: 'Test API',

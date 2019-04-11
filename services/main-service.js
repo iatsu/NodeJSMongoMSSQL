@@ -9,10 +9,9 @@ const dbconfig = {
 	server: 'localhost', 
 	database: 'DBName' 
 };
-const mongoUrl = "mongoURL";
+const mongoUrl = "url";
 
 const auth = async ({email, password}) => {
-
 	let pool = await sql.connect(dbconfig);
 	try {
 		const request = pool.request();
@@ -30,7 +29,7 @@ const auth = async ({email, password}) => {
 		} else
 			return { success: false, message: 'Invalid Token' };
 	} catch (err) {
-		pool.close();
+		sql.close();
 		return { success: false, message: 'Internal Error' };
 	}
 }
@@ -39,10 +38,10 @@ const getProducts = async () => {
 	let pool = await sql.connect(dbconfig);
   try {
     const result = await pool.query`select * from Product`
-		pool.close();
+		sql.close();
 		return { success: true, products: result.recordset };
   } catch (err) {
-		pool.close();
+		sql.close();
 		return { success: false, products: [] };
   }
 }
@@ -53,10 +52,10 @@ const getFilteredProducts = async (productId) => {
     const request = pool.request();
     request.input('productId', sql.Int, productId)
     const result = await request.query`select * from Product where Id = @productId`
-    pool.close();
+    sql.close();
 		return { success: true, products: result.recordset };
   } catch (err) {
-    pool.close();
+    sql.close();
 		return { success: false, products: [] };
   }
 }
