@@ -9,10 +9,14 @@
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "^4.16.4",
+    "express-jwt": "^5.3.1",
     "http-errors": "~1.6.2",
+    "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.2.3",
     "morgan": "~1.9.0",
     "mssql": "^5.0.5",
-    "pug": "2.0.0-beta11"
+    "pug": "2.0.0-beta11",
+    "swagger-jsdoc": "^3.2.8",
+    "swagger-ui-express": "^4.0.2"
   }
 }

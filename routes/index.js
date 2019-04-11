@@ -1,41 +1,87 @@
-var express = require('express');
-var router = express.Router();
-var sql = require("mssql");
-var MongoClient = require('mongodb').MongoClient;
+const express = require('express');
+const router = express.Router();
+const mainService = require('../services/main-service');
+const authorize = require('../helpers/authorize');
+const Role = require('../helpers/role');
 
-router.get('/', (req, res, next) => {
-  res.render('index', { title: 'Express' });
-});
-
-router.get('/products', async (req, res, next) => {
-  var config = {
-    user: 'user',
-    password: 'password',
-    server: 'localhost', 
-    database: 'MyMSSQLDatabase' 
-  };
-
-  try {
-    await sql.connect(config)
-    const result = await sql.query`select * from Product`
-    sql.close();
-    res.send(result.recordset);
-  } catch (err) {
-    sql.close();
-  }
-    
-});
-
-router.get('/logs', async (req, res, next) => {
-  var url = "mongodb://mongoUser:mongoPass@localhost:27017/?serverSelectionTimeoutMS=5000&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-256&3t.uriVersion=3&3t.connection.name=connName";
-
-  MongoClient.connect(url, function(err, mongoclient) {
-    if (err) throw err;
-    var db = mongoclient.db("TheCartMongoDb");
-    db.collection("Logs").findOne({}, function(err, result) {
-      if (err) throw err;
-      res.send(result);
-    });
+/**
+   * @swagger
+   * /api/authenticate:
+   *   post:
+   *     tags:
+   *      - User
+   *     parameters:
+   *      - in: body
+   *        description: Authentication
+   *        name: authentication
+   *        schema:
+   *          type: object
+   *          properties:
+   *            email:
+   *              type: string
+   *            password:
+   *              type: string
+   *     responses:
+   *       200:
+   *         description: Get Filtered Products
+   */
+  router.post('/authenticate', async (req, res, next) => {
+    const authResult = await mainService.auth({ email: req.body.email, password: req.body.password });
+    res.send(authResult);
   });
+
+/**
+   * @swagger
+   * /api/products:
+   *   get:
+   *     tags:
+   *      - Products
+   *     responses:
+   *       200:
+   *         description: Get Products
+   */
+router.get('/products', authorize(Role.User), async (req, res, next) => { //ONLY USERS
+  const products = await mainService.getProducts();
+  res.send(products);
 });
+
+/**
+   * @swagger
+   * /api/filteredproducts:
+   *   post:
+   *     tags:
+   *      - Products
+   *     parameters:
+   *      - in: body
+   *        description: Product Data
+   *        name: productData
+   *        schema:
+   *          type: object
+   *          properties:
+   *            productId:
+   *              type: integer
+   *     responses:
+   *       200:
+   *         description: Get Filtered Products
+   */
+router.post('/filteredproducts', authorize(), async (req, res, next) => { //ALL AUTHENTICATED USERS
+  const filteredProducts = await mainService.getFilteredProducts(req.body.productId);
+  res.send(filteredProducts);
+});
+
+/**
+   * @swagger
+   * /api/logs:
+   *   get:
+   *     tags:
+   *      - Products
+   *     responses:
+   *       200:
+   *         description: Get Logs
+   */
+router.get('/logs', async (req, res, next) => {
+  const logs = await mainService.getLogs();
+  res.send(logs);
+});
+
 module.exports = router;
