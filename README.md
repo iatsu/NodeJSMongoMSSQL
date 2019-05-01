@@ -3,7 +3,7 @@
 
 Authentication and authorization with Bearer JWT.
 
-Swagger URL: `/api-docs`
+Swagger URL: `localhost:3000/api-docs`
 
 The project was created using [expressjs generator](https://expressjs.com/en/starter/generator.html).
 
